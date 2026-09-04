@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_blobs
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
+from sklearn.datasets import load_iris
+
 
 #making a data set with 2 features that is centered around 2 areas (number of classes)
 X, y = make_blobs(300,2, center_box=(-5,5), centers = 2, random_state = 2) 
