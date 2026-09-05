@@ -7,7 +7,8 @@ from sklearn.datasets import make_blobs
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.datasets import load_iris
-
+from sklearn.metrics import roc_curve
+import matplotlib.pyplot as plt
 
 #making a data set with 2 features that is centered around 2 areas (number of classes)
 X, y = make_blobs(300,2, center_box=(-5,5), centers = 2, random_state = 2) 
@@ -31,6 +32,7 @@ def Svc(C,Kernal):
     Cv =np.mean(cross_val_score(Obj, X_train, y_train))
 
     Obj.fit(X_train,y_train)
+
     pred = Obj.predict(X_test)
 
     return accuracy_score(y_test,pred), Cv
