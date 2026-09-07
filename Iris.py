@@ -33,7 +33,7 @@ def OvO(yTest, decisionScore):
     return fprData, tprData, ThresholdsData   
 
 
-def OvR(yTest, decisionScore):
+def OvR(yTest, decisionScore, type= None):
     #have to binarize the data so its either the class or not, this is a maths trick to compress multiple calsses into 1 ie it is this or not
     #ie the coloums are is it this or not
     binainarized = label_binarize(yTest, classes = [0,1,2])
@@ -47,6 +47,8 @@ def OvR(yTest, decisionScore):
         fprData.append(fpr)
         tprData.append(tpr)
         ThresholdsData.append(thresholds)
+    if type == "micro":
+        
     return fprData, tprData, ThresholdsData   
 
 iris=load_iris()
@@ -87,7 +89,7 @@ kernals= ["linear","poly", "rbf", "sigmoid" ]
 
 for i in range(1,20):
     for j in kernals:
-        Obj = SVC(C=i,kernel=j)
+        Obj = SVC(C=i,kernel=j, probability = True)
         crossVal = np.mean(cross_val_score(Obj,XTrain,yTrain))
         Obj.fit(XTrain,yTrain)
 
@@ -97,7 +99,8 @@ for i in range(1,20):
         for k in range(0, len(fpr)):
             plt.plot(fpr[k],tpr[k])     
 
-        rocScore = roc_auc_score(yTest, decisionScore, multi_class= "ovo")
+        classProb = Obj.predict_proba(XTest)
+        rocScore = roc_auc_score(yTest, classProb, multi_class= "ovo")
         print(rocScore)
 
         prediction = Obj.predict(XTest)
