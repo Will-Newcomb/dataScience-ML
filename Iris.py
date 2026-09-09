@@ -33,7 +33,7 @@ def OvO(yTest, decisionScore):
     return fprData, tprData, ThresholdsData   
 
 
-def OvR(yTest, decisionScore, type= None):
+def OvR(yTest, decisionScore, type= None, AUC=False):
     #have to binarize the data so its either the class or not, this is a maths trick to compress multiple calsses into 1 ie it is this or not
     #ie the coloums are is it this or not
     binainarized = label_binarize(yTest, classes = [0,1,2])
@@ -42,27 +42,27 @@ def OvR(yTest, decisionScore, type= None):
     ThresholdsData = []
     #have to run though coloum by coloum to compare each class vs all calsses as roc curve only take 1d arrays   
     
-    
     #ie it works with a 1d array of 2 classes but for more classes we have to binarize into is that class or not ie 1 is 1 then all others are 0
     if type == "micro":
         #take the coloums and put them ened on end to make a 1d array this means when calcuting auc score all tp ect are added to from the micro metric
         binainarized = binainarized.ravel()
         decisionScore = decisionScore.ravel()
-        fpr, tpr, thresholds = roc_curve(binainarized, decisionScore)
-        return [fpr], [tpr], [thresholds]
+        fprData, tprData, ThresholdsData = roc_curve(binainarized, decisionScore)     
+
+    elif type == "All" or type == "Macro" or type == None:
+        for i in range(0,len(binainarized[0])):
+            fpr, tpr, thresholds = roc_curve(binainarized[:,i], decisionScore[:,i]) #returns fpr ect values for a specific class vs all others in a list for different threshold values 
+            fprData.append(fpr)
+            tprData.append(tpr)
+            ThresholdsData.append(thresholds)
 
 
-    
-    
-    for i in range(0,len(binainarized[0])):
-        fpr, tpr, thresholds = roc_curve(binainarized[:,i], decisionScore[:,i]) #returns fpr ect values for a specific class vs all others in a list for different threshold values 
-        fprData.append(fpr)
-        tprData.append(tpr)
-        ThresholdsData.append(thresholds)
+        #need to come back to this as thershold values are different as fpr data is different lengths so need interpolation
+        if type == "Macro":
+            fprData = np.sum(fprData, axis = 1)
+            tprData = np.sum(tprData, axis = 1)
 
-    if type == "macro":
-        fprData = np.sum(fprData, axis = 1)
-        tprData = np.sum(tprData, axis = 1)
+
     return fprData, tprData, ThresholdsData   
 
 iris=load_iris()
@@ -72,8 +72,7 @@ irisFrame = pd.DataFrame(iris.data,columns=iris.feature_names)
 #plt.show()
 
 XTrain, XTest, yTrain, yTest = train_test_split(irisFrame, iris.target,test_size = 0.2,random_state = 3)
-
-
+print(irisFrame)
 Weight = ["uniform","distance"]
 results = []
 
@@ -109,10 +108,20 @@ for i in range(1,20):
 
         decisionScore = Obj.decision_function(XTest) # Calculate scores for test points
 
-        fpr, tpr, thresholds= OvR(yTest, decisionScore, type = "micro")
+
+        #calcaulting and plotting the individual ovr curves
+        fpr, tpr, thresholds= OvR(yTest, decisionScore)
         for k in range(0, len(fpr)):
             plt.plot(fpr[k],tpr[k]) 
-            plt.show()    
+
+        #calculating and plotting the micro curve
+        fpr, tpr, thresholds= OvR(yTest, decisionScore, type="micro")
+        plt.plot(fpr,tpr) 
+
+        #Calculating and plotting the Macro curve
+        fpr, tpr, thresholds= OvR(yTest, decisionScore, type="Macro")
+        plt.plot(fpr,tpr) 
+        plt.show()    
 
         classProb = Obj.predict_proba(XTest)
         rocScore = roc_auc_score(yTest, classProb, multi_class= "ovo")
