@@ -9,10 +9,12 @@ from sklearn.model_selection import cross_val_score
 from sklearn.datasets import load_iris
 from sklearn.metrics import roc_curve
 import matplotlib.pyplot as plt
+from sklearn.datasets import make_moons
+
 
 #making a data set with 2 features that is centered around 2 areas (number of classes)
-X, y = make_blobs(300,2, center_box=(-5,5), centers = 2, random_state = 2) 
-X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.2,random_state = 3) 
+X, y = make_moons(n_samples = 300, noise = 0.25, random_state = 42)
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.2,random_state = 2) 
 
 
 def KNN(neighbours,Weight):
