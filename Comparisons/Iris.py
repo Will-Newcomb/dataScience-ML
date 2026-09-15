@@ -80,6 +80,7 @@ results = []
 # Binarize yTest once before the loop
 
 #for aoc curves for these as theres more than 2 classes you have to do some dunky stuff 
+#This is a KNN classfier that dosnet work out ROC curves yet
 for i in range(1,20):
     for j in Weight:
         Obj = KNeighborsClassifier(i,weights=j)
@@ -100,6 +101,7 @@ for i in range(1,20):
 resultsSVC = []
 kernals= ["linear","poly", "rbf", "sigmoid" ]
 
+#This is a SVC fit that can work out both OvO and OvR ROC curves 
 for i in range(1,20):
     for j in kernals:
         Obj = SVC(C=i,kernel=j, probability = True)

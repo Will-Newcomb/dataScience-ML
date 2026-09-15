@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm  as cm
 import pandas as pd
+from tqdm import tqdm
 
 
 
@@ -20,7 +21,7 @@ imageTarget = mnist.target # Reshape into its image form
 ReducedTarget = np.zeros(len(imageTarget))
 ReducedTarget[imageTarget == "5"] = "1" # string as data set stores them as this
 
-Xtrain, Xtest, ytrain, ytest = skms.train_test_split(imageData, ReducedTarget, test_size= 0.2, random_state=2)
+Xtrain, Xtest, ytrain, ytest = skms.train_test_split(imageData, ReducedTarget, test_size= 0.99, random_state=2)
 
 
 #setting up the SCV to vary hyperparamters though
@@ -28,7 +29,7 @@ Xtrain, Xtest, ytrain, ytest = skms.train_test_split(imageData, ReducedTarget, t
 kernals = ["linear", "poly", "rbf", "sigmoid"]
 bestAuc = 0
 
-for i in range(1,100):
+for i in tqdm(range(1,50)):
     for j in kernals:
         
         Classaifier = svm.SVC(C=i, kernel=j)
