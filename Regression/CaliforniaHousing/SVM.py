@@ -6,8 +6,6 @@ import sklearn.pipeline as skpipe
 import sklearn.model_selection as skms
 import sklearn.metrics as skm
 import pandas as pd
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
